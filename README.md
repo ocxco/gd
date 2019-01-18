@@ -1,0 +1,2 @@
+# gd
+go to directory
