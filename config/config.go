@@ -32,7 +32,7 @@ func (this *Config) remove(name string)  {
 		os.Exit(1)
 	}
 	delete(this.config, name);
-	fmt.Printf("Success, %s is removed from config")
+	fmt.Printf("Success, %s is removed from config\n", name)
 	this.changed = true
 }
 
@@ -44,7 +44,7 @@ func (this *Config) add(name string, path string)  {
 		os.Exit(1)
 	} else {
 		this.config[name] = path
-		fmt.Printf("Success, %s is added to config")
+		fmt.Printf("Success, %s is added to config as '%s' alias\n", name, path)
 	}
 	this.changed = true
 }
@@ -52,7 +52,7 @@ func (this *Config) add(name string, path string)  {
 func (this *Config) forceAdd(name string, path string)() {
 	this.checkCanAdd(name, path)
 	this.config[name] = path
-	fmt.Printf("Success, %s is added to config")
+	fmt.Printf("Success, %s is added to config as '%s' alias\n", name, path)
 	this.changed = true
 }
 
@@ -119,9 +119,14 @@ func (this *Config) Startup() {
 		fmt.Println(dir)
 	case "clear!":
 		this.config = map[string]string{}
+		this.changed = true
 		fmt.Println("all config cleared")
 	default:
 		path := this.get(flag.Arg(0))
+		if path == "" {
+			fmt.Printf("%s is not set\n", flag.Arg(0))
+			os.Exit(1)
+		}
 		fmt.Println(path)
 		os.Exit(0)
 	}
