@@ -47,8 +47,23 @@ function installFish() {
 
 function installBash() {
     echo "You are using normal bash/sh, it will be install at ~/.bashrc"
-    . ~/.zsh/gd.sh
     cat ../wrapper/gd.sh >> ~/.bashrc
+}
+
+function installWrapper() {
+    echo "Install the shell wrapper"
+    shell=$(getShell)
+    case "$shell" in
+        "fish")
+            installFish
+            ;;
+        "zsh")
+            installZsh
+            ;;
+        "bash")
+            installBash
+            ;;
+    esac
 }
 
 # chdir，in case can not fount file
@@ -57,20 +72,28 @@ cd $(dirname $0)
 # install start
 system=$(getSystem)
 bin="$(pwd)/$system/gd"
-echo "Copy binary file to /usr/local/bin/_gd"
-cp "$bin" /usr/local/bin/_gd
-echo "Install the shell wrapper"
-shell=$(getShell)
-case "$shell" in
-    "fish")
-        installFish
-        ;;
-    "zsh")
-        installZsh
-        ;;
-    "bash")
-        installBash
-        ;;
-esac
+if [[ "$system" == "windows" ]]; then
+    if [ -f ~/.config/gd/_gd ]; then
+        echo "gd already installed"
+        exit 1
+    fi
+    if [ ! -d ~/.config/gd ]; then
+        mkdir -p ~/.config/gd/
+    fi
+    echo "Copy binary file to ~/.config/gd/_gd"
+    cp "$bin" ~/.config/gd/_gd
+    echo "Install the shell wrapper"
+    cp ../wrapper/gd.sh ~/.config/gd/
+    echo 'export PATH=$PATH:~/.config/gd/' >> ~/.bashrc
+    echo "source ~/.config/gd/gd.sh" >> ~/.bashrc
+else
+    if [ -f /usr/local/bin/_gd ]; then
+        echo "gd already installed"
+        exit 1
+    fi
+    echo "Copy binary file to /usr/local/bin/_gd"
+    cp "$bin" /usr/local/bin/_gd
+    installWrapper
+fi
 
 echo "Install finished, you can use it when you start terminal next"

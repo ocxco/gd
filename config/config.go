@@ -32,6 +32,7 @@ func (this *Config) remove(name string)  {
 		os.Exit(1)
 	}
 	delete(this.config, name);
+	fmt.Printf("Success, %s is removed from config")
 	this.changed = true
 }
 
@@ -43,6 +44,7 @@ func (this *Config) add(name string, path string)  {
 		os.Exit(1)
 	} else {
 		this.config[name] = path
+		fmt.Printf("Success, %s is added to config")
 	}
 	this.changed = true
 }
@@ -50,6 +52,7 @@ func (this *Config) add(name string, path string)  {
 func (this *Config) forceAdd(name string, path string)() {
 	this.checkCanAdd(name, path)
 	this.config[name] = path
+	fmt.Printf("Success, %s is added to config")
 	this.changed = true
 }
 
@@ -67,7 +70,7 @@ func (this *Config) save()  {
 	check(err)
 	settingArr := []string{}
 	for key, value := range this.config {
-		settingArr = append(settingArr, key + ":" + value)
+        settingArr = append(settingArr, key + "::" + value)
 	}
 	settings := strings.Join(settingArr, "\n") + "\n"
 	b := []byte(settings)
@@ -84,7 +87,7 @@ func (this *Config) get(name string) string {
 }
 
 func (this *Config) help() {
-	fmt.Println("Usage：gd [command] [name]")
+	fmt.Println("Usage: gd [command] [name]")
 	fmt.Printf("  %-12s %s\n", "add  <name>", "add current directory as name")
 	fmt.Printf("  %-12s %s\n", "add! <name>", "force add current directory as name")
 	fmt.Printf("  %-12s %s\n", "ls | list", "list all of configs")
@@ -108,6 +111,10 @@ func (this *Config) Startup() {
 		this.list()
 	case "", "help":
 		this.help()
+	case "pwd":
+		dir, err := os.Getwd()
+		check(err)
+		fmt.Println(dir)
 	default:
 		path := this.get(flag.Arg(0))
 		fmt.Println(path)

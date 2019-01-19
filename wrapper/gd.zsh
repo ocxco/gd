@@ -8,7 +8,7 @@ gd() {
     output=$(_gd $@)
     ret=$?
     if [[  "$output" == "" ]]; then
-        exit 0
+        //
     elif [[ $ret -eq 0 ]]; then
         cd "$output"
     else

@@ -52,7 +52,7 @@ func (this *Config) initConfig() bool {
 	settings := string(s)
 	settingArr := strings.Split(settings, "\n");
 	for _, line := range settingArr {
-		c := strings.Split(line, ":")
+        c := strings.Split(line, "::")
 		if len(c) < 2 {
 			continue
 		}
