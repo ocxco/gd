@@ -3,46 +3,76 @@ package config
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"strings"
 )
 
-func initDir() bool  {
-	dir := getConfigPath()
-	f, err := os.Stat(dir)
+func (this *Config) initForbidden()  {
+	this.forbidden = make(map[string]bool)
+	this.forbidden["add"] = true
+	this.forbidden["rm"] = true
+	this.forbidden["list"] = true
+}
+
+func (this *Config) initDir() bool  {
+	this.path = getConfigPath()
+	f, err := os.Stat(this.path)
 	if os.IsNotExist(err) {
-		mkErr := os.Mkdir(dir, 0755)
+		mkErr := os.Mkdir(this.path, 0755)
 		check(mkErr)
 		return true
 	}
 	if !f.IsDir() {
-		fmt.Printf("已存在同名文件%s，无法创建配置文件夹\n", dir)
+		fmt.Printf("已存在同名文件%s，无法创建配置文件夹\n", this.path)
 		os.Exit(1)
 	}
 	return true
 }
 
-func initFile() bool  {
-	file := getConfigFile()
-	f, err := os.Stat(file)
+func (this *Config) initFile() bool  {
+	this.file = getConfigFile()
+	f, err := os.Stat(this.file)
 	if os.IsNotExist(err) {
-		_, thErr := os.Create(file)
+		_, thErr := os.Create(this.file)
 		check(thErr)
 		return true
 	}
 	if f.IsDir() {
-		fmt.Printf("已存在与配置文件同名文件夹 %s，请先删除\n", file)
+		fmt.Printf("已存在与配置文件同名文件夹 %s，请先删除\n", this.file)
 	}
 	return true
 }
 
-func initFlag()  {
-	flag.Bool("f", false, "-f for force add")
+func (this *Config) initConfig() bool {
+	this.config = make(map[string]string)
+	s, err := ioutil.ReadFile(this.file)
+	check(err)
+	settings := string(s)
+	settingArr := strings.Split(settings, "\n");
+	for _, line := range settingArr {
+		c := strings.Split(line, ":")
+		if len(c) < 2 {
+			continue
+		}
+		this.config[c[0]] = c[1]
+	}
+	return true
+}
+
+func (this *Config) initFlag()  {
+	this.params.add = flag.String("add", "", "-add sample, add current dir as sample to config")
+	this.params.rm = flag.String("rm", "", "-rm sample, remove sample from config")
+	this.params.list = flag.Bool("list", false, "list all config")
+	this.params.f = flag.Bool("f", false, "-f for force add a config (override)")
 	flag.Parse()
 }
 
-func Init()  {
-	initDir()
-	initFile()
-	initFlag()
+
+func (this *Config) Init()  {
+	this.initDir()
+	this.initFile()
+	this.initConfig()
+	this.initFlag()
 }
 
