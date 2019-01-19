@@ -13,6 +13,7 @@ func (this *Config) initForbidden()  {
 	this.forbidden["add"] = true
 	this.forbidden["rm"] = true
 	this.forbidden["list"] = true
+	this.forbidden["help"] = true
 }
 
 func (this *Config) initDir() bool  {
@@ -60,19 +61,11 @@ func (this *Config) initConfig() bool {
 	return true
 }
 
-func (this *Config) initFlag()  {
-	this.params.add = flag.String("add", "", "-add sample, add current dir as sample to config")
-	this.params.rm = flag.String("rm", "", "-rm sample, remove sample from config")
-	this.params.list = flag.Bool("list", false, "list all config")
-	this.params.f = flag.Bool("f", false, "-f for force add a config (override)")
-	flag.Parse()
-}
-
-
 func (this *Config) Init()  {
 	this.initDir()
 	this.initFile()
 	this.initConfig()
-	this.initFlag()
+	this.initForbidden()
+	flag.Parse()
 }
 

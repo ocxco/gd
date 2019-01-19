@@ -1,14 +1,12 @@
 package config
 
 import (
-	"fmt"
 	"os"
 )
 
 func check(err error)  {
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		panic(err)
 	}
 }
 
@@ -28,12 +26,4 @@ type Config struct {
 	changed bool // mark if the config had changed
 	config map[string]string // parsed configs
 	forbidden map[string]bool // keywords for forbidden
-	params params // command line params
-}
-
-type params struct {
-	add *string
-	rm *string
-	list *bool
-	f *bool
 }

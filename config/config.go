@@ -8,41 +8,48 @@ import (
 	"strings"
 )
 
-func (this *Config) Get(name string) string {
-	cfg, ok := this.config[name]
-	if ok {
-		return cfg
+func (this *Config) checkCanAdd(name string, path string)  {
+	if name == "" {
+		fmt.Println("Must assign a name")
+		os.Exit(1)
 	}
-	return ""
-}
-
-func (this *Config) isForbidden(name string)  {
 	_, ok := this.forbidden[name]
 	if ok {
-		fmt.Println("Can not use add、rm、list as short keyword\n")
-		os.Exit(2)
+		fmt.Println("Can not use add、rm、list as short keyword")
+		os.Exit(1)
+	}
+	for key, value := range this.config {
+		if path == value {
+			fmt.Printf("Current directory %s already added as %s\n", value, key)
+			os.Exit(1)
+		}
 	}
 }
 
 func (this *Config) remove(name string)  {
+	if name == "" {
+		fmt.Println("Must assign a name")
+		os.Exit(1)
+	}
 	delete(this.config, name);
 	this.changed = true
 }
 
-func (this *Config) add(name string)  {
-	this.isForbidden(name)
-	nowPath := this.Get(name)
-	dir, err := os.Getwd()
-	check(err)
+func (this *Config) add(name string, path string)  {
+	this.checkCanAdd(name, path)
+	nowPath := this.get(name)
 	if "" != nowPath {
-		if !*this.params.f {
-			fmt.Printf("%s already added, now path is %s\n", name, nowPath)
-			os.Exit(1)
-		}
-		this.config[name] = dir
+		fmt.Printf("%s already added, now path is %s\n", name, nowPath)
+		os.Exit(1)
 	} else {
-		this.config[name] = dir
+		this.config[name] = path
 	}
+	this.changed = true
+}
+
+func (this *Config) forceAdd(name string, path string)() {
+	this.checkCanAdd(name, path)
+	this.config[name] = path
 	this.changed = true
 }
 
@@ -68,20 +75,44 @@ func (this *Config) save()  {
 	check(err)
 }
 
-func (this *Config) Startup()  {
+func (this *Config) get(name string) string {
+	cfg, ok := this.config[name]
+	if ok {
+		return cfg
+	}
+	return ""
+}
+
+func (this *Config) help() {
+	fmt.Println("Usage：gd [command] [name]")
+	fmt.Printf("  %-12s %s\n", "add  <name>", "add current directory as name")
+	fmt.Printf("  %-12s %s\n", "add! <name>", "force add current directory as name")
+	fmt.Printf("  %-12s %s\n", "ls | list", "list all of configs")
+	fmt.Printf("  %-12s %s\n", "help", "show this help content")
+}
+
+func (this *Config) Startup() {
 	this.Init()
-	if *this.params.add != "" {
-		this.add(*this.params.add)
-	} else if *this.params.rm != "" {
-		this.remove(*this.params.rm)
-	} else if *this.params.list {
+	switch flag.Arg(0) {
+	case "add":
+		dir, err := os.Getwd()
+		check(err)
+		this.add(flag.Arg(1), dir)
+	case "add!":
+		dir, err := os.Getwd()
+		check(err)
+		this.forceAdd(flag.Arg(1), dir)
+	case "rm":
+		this.remove(flag.Arg(1))
+	case "ls", "list":
 		this.list()
-	} else {
-		path := this.Get(flag.Arg(0))
-		if path != "" {
-			err := os.Chdir(path)
-			check(err)
-		}
+	case "", "help":
+		this.help()
+	default:
+		path := this.get(flag.Arg(0))
+		fmt.Println(path)
+		os.Exit(0)
 	}
 	this.save()
+	os.Exit(1)
 }
