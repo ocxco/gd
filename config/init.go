@@ -11,9 +11,12 @@ import (
 func (this *Config) initForbidden()  {
 	this.forbidden = make(map[string]bool)
 	this.forbidden["add"] = true
+	this.forbidden["add!"] = true
 	this.forbidden["rm"] = true
 	this.forbidden["list"] = true
 	this.forbidden["help"] = true
+	this.forbidden["pwd"] = true
+	this.forbidden["clear!"] = true
 }
 
 func (this *Config) initDir() bool  {

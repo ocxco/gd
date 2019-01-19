@@ -91,7 +91,9 @@ func (this *Config) help() {
 	fmt.Printf("  %-12s %s\n", "add  <name>", "add current directory as name")
 	fmt.Printf("  %-12s %s\n", "add! <name>", "force add current directory as name")
 	fmt.Printf("  %-12s %s\n", "ls | list", "list all of configs")
+	fmt.Printf("  %-12s %s\n", "pwd", "show current directory")
 	fmt.Printf("  %-12s %s\n", "help", "show this help content")
+	fmt.Printf("  %-12s %s\n", "clear!", "clear all config")
 }
 
 func (this *Config) Startup() {
@@ -115,6 +117,9 @@ func (this *Config) Startup() {
 		dir, err := os.Getwd()
 		check(err)
 		fmt.Println(dir)
+	case "clear!":
+		this.config = map[string]string{}
+		fmt.Println("all config cleared")
 	default:
 		path := this.get(flag.Arg(0))
 		fmt.Println(path)
