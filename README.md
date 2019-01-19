@@ -6,6 +6,7 @@ It's can set an alias to any directory, to help us enter the directory easily
 
 Written by golang
 
+```
 ㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠
 ㈠㈠㈠㈠①①①①①①①㈠㈠㈠①①①①①①①①㈠㈠㈠㈠
 ㈠㈠㈠①①①㈠㈠㈠①①①㈠㈠①①①㈠㈠㈠①①①㈠㈠㈠
@@ -20,7 +21,8 @@ Written by golang
 ㈠㈠㈠①①①㈠㈠㈠①①①①㈠①①①㈠㈠㈠①①①㈠㈠㈠
 ㈠㈠㈠㈠①①①①①①①①①㈠①①①①①①①①㈠㈠㈠㈠
 ㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠㈠
-                                            
+```
+
 ### Installation
 
 ```$xslt
