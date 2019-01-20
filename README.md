@@ -43,6 +43,7 @@ Usage：gd [command] [name]
   ls | list    list all of configs
   help         show this help content
 ```
+![演示图片](https://github.com/ocxco/gd/blob/master/images/gd.gif)
 
 ### wrapper
 
