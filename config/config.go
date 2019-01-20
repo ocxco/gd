@@ -10,17 +10,21 @@ import (
 
 func (this *Config) checkCanAdd(name string, path string)  {
 	if name == "" {
-		fmt.Println("Must assign a name")
+		fmt.Println("Must assign an alias to add")
 		os.Exit(1)
 	}
 	_, ok := this.forbidden[name]
 	if ok {
-		fmt.Println("Can not use add、rm、list as short keyword")
+		fmt.Println("Can not use add、add!、rm、list、pwd、clear! as alias")
 		os.Exit(1)
 	}
 	for key, value := range this.config {
 		if path == value {
-			fmt.Printf("Current directory %s already added as %s\n", value, key)
+			if flag.Arg(0) == "add!" {
+				delete(this.config, key)
+				return
+			}
+			fmt.Printf("Current directory %s already added as alias %s, use add! to realias it\n", value, key)
 			os.Exit(1)
 		}
 	}
@@ -28,11 +32,11 @@ func (this *Config) checkCanAdd(name string, path string)  {
 
 func (this *Config) remove(name string)  {
 	if name == "" {
-		fmt.Println("Must assign a name")
+		fmt.Println("Must assign an alias to remove")
 		os.Exit(1)
 	}
 	delete(this.config, name);
-	fmt.Printf("Success, %s is removed from config\n", name)
+	fmt.Printf("Success, alias %s is removed from config\n", name)
 	this.changed = true
 }
 
@@ -40,11 +44,11 @@ func (this *Config) add(name string, path string)  {
 	this.checkCanAdd(name, path)
 	nowPath := this.get(name)
 	if "" != nowPath {
-		fmt.Printf("%s already added, now path is %s\n", name, nowPath)
+		fmt.Printf("alias %s already used, now path is %s\n", name, nowPath)
 		os.Exit(1)
 	} else {
 		this.config[name] = path
-		fmt.Printf("Success, %s is added to config as '%s' alias\n", name, path)
+		fmt.Printf("Success,alias %s for %s is added to config \n", name, path)
 	}
 	this.changed = true
 }
@@ -52,7 +56,7 @@ func (this *Config) add(name string, path string)  {
 func (this *Config) forceAdd(name string, path string)() {
 	this.checkCanAdd(name, path)
 	this.config[name] = path
-	fmt.Printf("Success, %s is added to config as '%s' alias\n", name, path)
+	fmt.Printf("Success,alias %s for %s is added to config \n", name, path)
 	this.changed = true
 }
 
@@ -87,11 +91,11 @@ func (this *Config) get(name string) string {
 }
 
 func (this *Config) help() {
-	fmt.Println("Usage: gd [command] [name]")
-	fmt.Printf("  %-12s %s\n", "add  <name>", "add current directory as name")
-	fmt.Printf("  %-12s %s\n", "add! <name>", "force add current directory as name")
+	fmt.Println("Usage: gd [command] [alias]")
+	fmt.Printf("  %-12s %s\n", "add  <alias>", "add current directory as alias")
+	fmt.Printf("  %-12s %s\n", "add! <alias>", "force add current directory as alias")
 	fmt.Printf("  %-12s %s\n", "ls | list", "list all of configs")
-	fmt.Printf("  %-12s %s\n", "pwd", "show current directory")
+	fmt.Printf("  %-12s %s\n", "pwd", "show current directory, it's useful on git bash on windows")
 	fmt.Printf("  %-12s %s\n", "help", "show this help content")
 	fmt.Printf("  %-12s %s\n", "clear!", "clear all config")
 }
@@ -124,7 +128,7 @@ func (this *Config) Startup() {
 	default:
 		path := this.get(flag.Arg(0))
 		if path == "" {
-			fmt.Printf("%s is not set\n", flag.Arg(0))
+			fmt.Printf("alias %s haven't set\n", flag.Arg(0))
 			os.Exit(1)
 		}
 		fmt.Println(path)
