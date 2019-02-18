@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"os"
 	"strings"
 )
@@ -61,8 +62,12 @@ func (this *Config) forceAdd(name string, path string)() {
 }
 
 func (this *Config) list()  {
+	maxLen := 0.0
+	for key, _ := range this.config {
+		maxLen = math.Max(maxLen, float64(len(key)))
+	}
 	for key, value := range this.config {
-		fmt.Printf("%s => %s\n", key, value)
+		fmt.Printf("%[1]*s => %s\n", int(maxLen), key, value)
 	}
 }
 
@@ -94,6 +99,7 @@ func (this *Config) help() {
 	fmt.Println("Usage: gd [command] [alias]")
 	fmt.Printf("  %-12s %s\n", "add  <alias>", "add current directory as alias")
 	fmt.Printf("  %-12s %s\n", "add! <alias>", "force add current directory as alias")
+	fmt.Printf("  %-12s %s\n", "rm   <alias>", "remove an exist alias from list")
 	fmt.Printf("  %-12s %s\n", "ls | list", "list all of configs")
 	fmt.Printf("  %-12s %s\n", "pwd", "show current directory, it's useful on git bash on windows")
 	fmt.Printf("  %-12s %s\n", "help", "show this help content")
