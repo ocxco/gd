@@ -6,7 +6,7 @@ GO TO DIRECTORY
 
 It's can set an alias to any directory, to help us enter the directory easily
 
-Written by golang
+Written in golang
 
 ```
 ◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇
